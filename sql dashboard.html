@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Superstore Sales Dashboard — Tanya Sarwan</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f8f6; color: #1a1a1a; padding: 2rem; }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: #666; margin-bottom: 2rem; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 2rem; }
+  .kpi { background: #fff; border-radius: 10px; padding: 16px; border: 1px solid #e8e8e4; }
+  .kpi-label { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .kpi-value { font-size: 24px; font-weight: 600; color: #1a1a1a; }
+  .kpi-sub { font-size: 11px; color: #aaa; margin-top: 3px; }
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .chart-card { background: #fff; border-radius: 12px; padding: 20px; border: 1px solid #e8e8e4; }
+  .chart-card.full { grid-column: 1 / -1; }
+  .chart-title { font-size: 14px; font-weight: 500; color: #1a1a1a; margin-bottom: 14px; }
+  .chart-wrap { position: relative; width: 100%; }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; font-size: 12px; color: #666; }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+  .section-title { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin: 2rem 0 12px; }
+  .insight-list { list-style: none; }
+  .insight-list li { display: flex; gap: 12px; padding: 12px 16px; border-radius: 8px; border: 1px solid #e8e8e4; margin-bottom: 8px; font-size: 13px; line-height: 1.6; background: #fff; }
+  .insight-list li .num { font-size: 12px; font-weight: 600; color: #999; min-width: 20px; }
+  .footer { margin-top: 2rem; font-size: 12px; color: #aaa; text-align: center; }
+  @media (max-width: 600px) { .charts-grid { grid-template-columns: 1fr; } body { padding: 1rem; } }
+</style>
+</head>
+<body>
+
+<h1>Superstore Sales — Business Analysis</h1>
+<p class="subtitle">SQL Portfolio Project · Tanya Sarwan · Dataset: 9,800 rows · Tools: SQL (SQLite), Python, Chart.js</p>
+
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-label">Total revenue</div>
+    <div class="kpi-value">$2.26M</div>
+    <div class="kpi-sub">9,800 records</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Total orders</div>
+    <div class="kpi-value">4,922</div>
+    <div class="kpi-sub">Unique orders</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Total customers</div>
+    <div class="kpi-value">793</div>
+    <div class="kpi-sub">98.4% repeat rate</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Avg order value</div>
+    <div class="kpi-value">$459</div>
+    <div class="kpi-sub">Per order</div>
+  </div>
+</div>
+
+<div class="charts-grid">
+
+  <div class="chart-card">
+    <div class="chart-title">Revenue by region</div>
+    <div class="chart-wrap" style="height:200px">
+      <canvas id="regionChart" role="img" aria-label="Revenue by region bar chart">West $710K, East $670K, Central $493K, South $389K</canvas>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">Revenue by category</div>
+    <div class="legend">
+      <span><span class="legend-dot" style="background:#378ADD"></span>Technology 36.6%</span>
+      <span><span class="legend-dot" style="background:#1D9E75"></span>Furniture 32.2%</span>
+      <span><span class="legend-dot" style="background:#BA7517"></span>Office Supplies 31.2%</span>
+    </div>
+    <div class="chart-wrap" style="height:170px">
+      <canvas id="catChart" role="img" aria-label="Revenue by category doughnut chart">Technology 36.6%, Furniture 32.2%, Office Supplies 31.2%</canvas>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">Yearly sales trend</div>
+    <div class="chart-wrap" style="height:200px">
+      <canvas id="yearChart" role="img" aria-label="Yearly sales trend line chart">2015 $480K, 2016 $459K, 2017 $600K, 2018 $722K</canvas>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">RFM customer segments</div>
+    <div class="legend">
+      <span><span class="legend-dot" style="background:#1D9E75"></span>Loyal 44.8%</span>
+      <span><span class="legend-dot" style="background:#E24B4A"></span>At risk 25.9%</span>
+      <span><span class="legend-dot" style="background:#378ADD"></span>Champions 18.1%</span>
+      <span><span class="legend-dot" style="background:#888780"></span>Lost 11.2%</span>
+    </div>
+    <div class="chart-wrap" style="height:170px">
+      <canvas id="rfmChart" role="img" aria-label="RFM customer segments doughnut chart">Loyal 44.8%, At Risk 25.9%, Champions 18.1%, Lost 11.2%</canvas>
+    </div>
+  </div>
+
+  <div class="chart-card full">
+    <div class="chart-title">Top 10 sub-categories by revenue</div>
+    <div class="chart-wrap" style="height:320px">
+      <canvas id="subCatChart" role="img" aria-label="Top 10 sub-categories horizontal bar chart">Phones $328K, Chairs $323K top performers</canvas>
+    </div>
+  </div>
+
+  <div class="chart-card full">
+    <div class="chart-title">Revenue by customer segment</div>
+    <div class="chart-wrap" style="height:200px">
+      <canvas id="segChart" role="img" aria-label="Revenue by customer segment bar chart">Consumer $1.15M, Corporate $688K, Home Office $425K</canvas>
+    </div>
+  </div>
+
+</div>
+
+<p class="section-title">Key business insights</p>
+<ul class="insight-list">
+  <li><span class="num">01</span>West and East together account for 61% of total revenue ($1.38M), while the South contributes just 17.2% — a $321K gap vs the West alone.</li>
+  <li><span class="num">02</span>RFM analysis shows 305 customers (38.3%) are At Risk or Lost, carrying 37.1% of total revenue — the biggest retention opportunity in the dataset.</li>
+  <li><span class="num">03</span>The South has zero sales of Canon imageCLASS 2200 Copier despite $44K revenue in East+West — the cleanest whitespace product opportunity found.</li>
+  <li><span class="num">04</span>Central region grew 42.2% in 2017 then declined 2.78% in 2018 — the only region showing contraction, needs root cause investigation.</li>
+  <li><span class="num">05</span>Shipping speed has near-zero correlation (-0.007) with order value — faster delivery alone won't increase basket size.</li>
+</ul>
+
+<div class="footer">Tanya Sarwan · tanyasarwan23@gmail.com · github.com/labubu-ux</div>
+
+<script>
+const gridColor = 'rgba(0,0,0,0.06)';
+const tickColor = '#999';
+const font = { size: 12 };
+
+new Chart(document.getElementById('regionChart'), {
+  type: 'bar',
+  data: {
+    labels: ['West','East','Central','South'],
+    datasets: [{ data: [710220,669519,492647,389151], backgroundColor: ['#378ADD','#1D9E75','#BA7517','#E24B4A'], borderRadius: 4 }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+    scales: { x: { ticks: { color: tickColor, font }, grid: { display: false } }, y: { ticks: { color: tickColor, font, callback: v => '$'+(v/1000).toFixed(0)+'K' }, grid: { color: gridColor } } } }
+});
+
+new Chart(document.getElementById('catChart'), {
+  type: 'doughnut',
+  data: { labels: ['Technology','Furniture','Office Supplies'], datasets: [{ data: [827456,728659,705422], backgroundColor: ['#378ADD','#1D9E75','#BA7517'], borderWidth: 0 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '65%' }
+});
+
+new Chart(document.getElementById('yearChart'), {
+  type: 'line',
+  data: { labels: ['2015','2016','2017','2018'], datasets: [{ data: [479856,459436,600193,722052], borderColor: '#378ADD', backgroundColor: 'rgba(55,138,221,0.08)', borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#378ADD', fill: true, tension: 0.3 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+    scales: { x: { ticks: { color: tickColor, font }, grid: { display: false } }, y: { ticks: { color: tickColor, font, callback: v => '$'+(v/1000).toFixed(0)+'K' }, grid: { color: gridColor } } } }
+});
+
+new Chart(document.getElementById('rfmChart'), {
+  type: 'doughnut',
+  data: { labels: ['Loyal','At Risk','Champions','Lost'], datasets: [{ data: [394,155,94,150], backgroundColor: ['#1D9E75','#E24B4A','#378ADD','#888780'], borderWidth: 0 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '65%' }
+});
+
+new Chart(document.getElementById('subCatChart'), {
+  type: 'bar',
+  data: { labels: ['Phones','Chairs','Storage','Tables','Binders','Machines','Accessories','Copiers','Bookcases','Appliances'],
+    datasets: [{ data: [327782,322823,219343,202811,200029,189239,164187,146248,113813,104618], backgroundColor: '#378ADD', borderRadius: 3 }] },
+  options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+    scales: { x: { ticks: { color: tickColor, font, callback: v => '$'+(v/1000).toFixed(0)+'K' }, grid: { color: gridColor } }, y: { ticks: { color: tickColor, font }, grid: { display: false } } } }
+});
+
+new Chart(document.getElementById('segChart'), {
+  type: 'bar',
+  data: { labels: ['Consumer','Corporate','Home Office'], datasets: [{ data: [1148061,688494,424982], backgroundColor: ['#378ADD','#1D9E75','#BA7517'], borderRadius: 4 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+    scales: { x: { ticks: { color: tickColor, font }, grid: { display: false } }, y: { ticks: { color: tickColor, font, callback: v => '$'+(v/1000).toFixed(0)+'K' }, grid: { color: gridColor } } } }
+});
+</script>
+</body>
+</html>
